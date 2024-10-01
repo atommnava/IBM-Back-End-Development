@@ -1,0 +1,30 @@
+/* 1. List the permissions set for the file usdoi.txt that you downloaded to your project directory at the beginning of the lab. */
+
+cd /home/project
+ls -l usdoi.txt
+
+/* 2. Revoke the write permission on usdoi.txt for the user, and verify your result. */
+
+chmod u-w  usdoi.txt
+ls -l usdoi.txt
+
+/* 3. What happens if you try to delete usdoi.txt after revoking write permissions for the user? */
+
+rm usdoi.txt // OUTPUT rm: remove write-protected regular file \'usdoi.txt\'?
+ls usdoi.txt
+
+/* 4. Create a new directory called tmp_dir in your home directory. */
+
+mkdir tmp_dir
+
+/* 5. View the permissions of the newly created directory, tmp_dir. */
+
+ls -ld tmp_dir
+
+/* 6. Revoke the user write permission for tmp_dir. */
+
+chmod u-w tmp_dir
+
+/* 7. Check whether you can create a subdirectory of tmp_dir called sub_dir. */
+
+mkdir tmp_dir/sub_dir
