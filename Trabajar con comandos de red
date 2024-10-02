@@ -1,0 +1,19 @@
+/* 1. Display your host's IP address. */
+
+hostname -i
+
+/* 2. Get connectivity stats on your connection to www.google.com */
+
+ping www.google.com
+
+/* 3. View info about your ethernet adapter eth0. */
+
+ifconfig eth0
+
+/* 4. View the HTML code for www.google.com's landing page. */
+
+curl www.google.com
+
+/* 5. Download the HTML code for www.google.com's landing page. */
+
+wget www.google.com
