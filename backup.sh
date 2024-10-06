@@ -27,7 +27,7 @@ echo "Destination directory: $destinationDirectory"
 currentTS=$(date +%s)
 
 # [TASK 4]
-backupFileName="backup-${currentTS}.tar.gz"
+backupFileName="backup-$currentTS.tar.gz"
 
 # We're going to:
   # 1: Go into the target directory
@@ -48,7 +48,7 @@ cd # <- origAbsPath
 cd # <- targetDirectory
 
 # [TASK 8]
-yesterdayTS=
+yesterdayTS= $(($currentTS - 86000)
 
 declare -a toBackup
 
