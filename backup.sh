@@ -24,7 +24,7 @@ echo "Target directory: $targetDirectory"
 echo "Destination directory: $destinationDirectory"
 
 # [TASK 3]
-currentTS=``
+currentTS= `date +%s`
 
 # [TASK 4]
 backupFileName=""
