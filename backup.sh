@@ -44,8 +44,8 @@ cd # <- destinationDirectory
 destDirAbsPath=`pwd`
 
 # [TASK 7]
-cd # <-
-cd # <-
+cd # <- origAbsPath
+cd # <- targetDirectory
 
 # [TASK 8]
 yesterdayTS=
