@@ -55,7 +55,8 @@ declare -a toBackup
 for file in $(ls) # [TASK 9]
 do
   # [TASK 10]
-  if (())
+  
+  if (('date -r $file' +%s > $yesterdayTS))
   then
     # [TASK 11]
   fi
