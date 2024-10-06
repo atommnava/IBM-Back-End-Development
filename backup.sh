@@ -52,7 +52,7 @@ yesterdayTS= $(($currentTS - 86000)
 
 declare -a toBackup
 
-for file in $() # [TASK 9]
+for file in $(ls) # [TASK 9]
 do
   # [TASK 10]
   if (())
