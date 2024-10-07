@@ -59,6 +59,7 @@ do
   if (('date -r $file' +%s > $yesterdayTS))
   then
     # [TASK 11]
+    toBackup+=($file)
   fi
 done
 
