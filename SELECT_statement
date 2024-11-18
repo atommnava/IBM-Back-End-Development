@@ -1,0 +1,33 @@
+1. If the first statement listed below is not already in the Datasette textbox on the right, 
+then copy the code below by clicking on the little copy button on the bottom right of the code block below and then paste it into the textbox of the Datasette tool 
+using either Ctrl+V or right-click in the text box and choose Paste. 
+
+SELECT * FROM FilmLocations;
+
+2. Click Submit Query.
+3. Now, you can scroll down the table and explore all the columns and rows of the FilmLocations table to get an overall idea of the table contents.
+
+4. These are the column attribute descriptions from the FilmLocations table:
+
+FilmLocations(
+Title:              titles of the films, 
+ReleaseYear:        time of public release of the films, 
+Locations:          locations of San Francisco where the films were shot, 
+FunFacts:           funny facts about the filming locations, 
+ProductionCompany:  companies who produced the films, 
+Distributor:        companies who distributed the films, 
+Director:           people who directed the films, 
+Writer:             people who wrote the films, 
+Actor1:             person 1 who acted in the films, 
+Actor2:             person 2 who acted in the films, 
+Actor3:             person 3 who acted in the films
+)
+
+2.1 We want to retrieve the film names and director and writer names. The query now would be:
+
+SELECT Title, Director, Writer FROM FilmLocations;
+
+3.1 We want to retrieve film names along with filming locations and release years. 
+    But we also want to restrict the output resultset to retrieve only the film records released in 2001 and onwards (release years after 2001, including 2001).
+
+SELECT Title, ReleaseYear, Locations FROM FilmLocations WHERE ReleaseYear >= 2001;
