@@ -1,0 +1,69 @@
+* Run the following command-lines to download a code template for this lab
+
+wget "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-CD0251EN-SkillsNetwork/labs/m4_django_app/lab3_template.zip"
+unzip lab3_template.zip
+rm lab3_template.zip
+
+* cd lab3_template
+* Next, install required packages for this lab:
+  
+pip install --upgrade distro-info
+pip3 install --upgrade pip==23.2.1
+pip install virtualenv
+virtualenv djangoenv
+source djangoenv/bin/activate
+pip install -U -r requirements.txt
+
+* You need to perform migrations for first-time running to create necessary tables
+python3 manage.py makemigrations
+
+* And run migration to activate models for onlinecourse app.
+python3 manage.py migrate
+
+* Open onlinecourse/templates/onlinecourse/course_list.html and copy the following
+code snippet under <!-- Add your template there -->
+
+{% if course_list %}
+    <ul>
+    {% for course in course_list %}
+        <div>
+            <img src="{{ MEDIA_URL }}/{{ course.image }}" width="360" height="360" >
+            <h1><b>{{ course.name }}</b></h1>
+        </div>
+    {% endfor %}
+    </ul>
+{% else %}
+<p>No courses are available.</p>
+{% endif %}
+
+In above code snippet, we first add a {% if course_list %} if tag to check if the course_listexists in the context sent by the index view.
+
+If it exists, we then add a {% for course in course_list %} to iterate the course list and display the fields of course such as image, name, etc.
+
+
+Next, let's create a view to provide a course list to the template via Course model.
+
+Open onlinecourse/views.py, add a view to get top-10 popular courses from models.
+The courses objects are ordered by total_enrollment in desc order and the first ten objects are sliced as the top-10 courses,
+Then we create a context dictionary object and append course_list into context.
+
+def popular_course_list(request):
+    context = {}
+    # If the request method is GET
+    if request.method == 'GET':
+        # Using the objects model manage to read all course list
+        # and sort them by total_enrollment descending
+        course_list = Course.objects.order_by('-total_enrollment')[:10]
+        # Appen the course list as an entry of context dict
+        context['course_list'] = course_list
+        return render(request, 'onlinecourse/course_list.html', context)
+
+* Open onlinecourse/urls.py, add a path entry in urlpatterns:
+
+path(route='', view=views.popular_course_list, name='popular_course_list'),
+
+* Start the server
+python3 manage.py runserver
+
+      
+  
