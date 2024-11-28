@@ -1,0 +1,62 @@
+1. Use the docker CLI to list your images.
+
+docker images
+
+2. Pull your first image from Docker Hub.
+
+docker pull hello-world
+
+3. Run the hello-world image as a container.
+
+docker run hello-world
+
+4. List the containers to see that your container ran and exited successfully.
+
+docker ps -a
+
+5. Note the CONTAINER ID from the previous output and replace the <container_id> tag in the command below with this value. This command removes your container.
+
+docker container rm <container_id>
+
+FROM node:9.4.0-alpine
+COPY app.js .
+COPY package.json .
+RUN npm install &&\
+    apk update &&\
+    apk upgrade
+EXPOSE  8080
+CMD node app.js
+
+The FROM instruction initializes a new build stage and specifies the base image that subsequent instructions will build upon.
+
+The COPY command enables us to copy files to our image.
+
+The RUN instruction executes commands.
+
+The EXPOSE instruction exposes a particular port with a specified protocol inside a Docker Container.
+
+The CMD instruction provides a default for executing a container, or in other words, an executable that should run in your container.
+
+6. Run the following command to build the image:
+  
+docker build . -t myimage:v1
+
+7. List images to see your image tagged myimage:v1 in the table.
+
+docker images
+
+8. Now that your image is built, run it as a container with the following command:
+
+docker run -dp 8080:8080 myimage:v1
+
+9. Run the curl command to ping the application as given below.
+
+curl localhost:8080
+
+10. Now to stop the container we use docker stop followed by the container id. The following command uses docker ps -q to pass in the list of all running containers:
+
+docker stop $(docker ps -q)
+
+11. Check if the container has stopped by running the following command.
+
+docker ps
