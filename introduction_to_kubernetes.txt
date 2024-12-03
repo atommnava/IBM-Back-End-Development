@@ -1,0 +1,37 @@
+Clone the git repository that contains the artifacts needed for this lab, if it doesn’t already exist.
+
+[ ! -d 'CC201' ] && git clone https://github.com/ibm-developer-skills-network/CC201.git
+cd CC201/labs/2_IntroKubernetes/
+
+1. kubectl requires configuration so that it targets the appropriate cluster. Get cluster information with the following command:
+
+kubectl config get-clusters
+
+2. A kubectl context is a group of access parameters, including a cluster, a user, and a namespace. View your current context with the following command:
+
+kubectl config get-contexts
+
+3. List all the Pods in your namespace. If this is a new session for you, you will not see any Pods.
+
+kubectl get pods
+
+*Create a Pod with an imperative command*
+
+1. Export your namespace as an environment variable so that it can be used in subsequent commands.
+
+export MY_NAMESPACE=sn-labs-$USERNAME
+
+3. Build and push the image again, as it may have been deleted automatically since you completed the first lab.
+
+docker build -t us.icr.io/$MY_NAMESPACE/hello-world:1 . && docker push us.icr.io/$MY_NAMESPACE/hello-world:1
+
+4. Run the hello-world image as a container in Kubernetes.
+
+kubectl run hello-world --image us.icr.io/$MY_NAMESPACE/hello-world:1 --overrides='{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"icr"}]}}}}'
+
+
+
+
+
+
+
