@@ -1,0 +1,183 @@
+In this lab, you will:
+
+Scale an application with a ReplicaSet
+Apply rolling updates to an application
+Use a ConfigMap to store application configuration
+Autoscale the application using Horizontal Pod Autoscaler
+
+* Clone the git repository that contains the artifacts needed for this lab, if it doesn’t already exist.
+
+[ ! -d 'CC201' ] && git clone https://github.com/ibm-developer-skills-network/CC201.git
+
+* cd CC201/labs/3_K8sScaleAndUpdate/
+
+Build and push application image to IBM Cloud Container Registry
+
+1. Export your namespace as an environment variable so that it can be used in subsequent commands.
+
+export MY_NAMESPACE=sn-labs-$USERNAME
+
+2. Use the Explorer to view the Dockerfile that will be used to build an image.
+
+3. Build and push the image again, as it may have been deleted automatically since you completed the first lab.
+
+docker build -t us.icr.io/$MY_NAMESPACE/hello-world:1 . && docker push us.icr.io/$MY_NAMESPACE/hello-world:1
+
+Deploy the application to Kubernetes
+
+1. Use the Explorer to edit deployment.yaml in this directory. The path to this file is CC201/labs/3_K8sScaleAndUpdate/. You need to insert your namespace where it says <my_namespace>. Make sure to save the file when you’re done.
+# NOTE: To know your namespace, run echo $MY_NAMESPACE in the terminal
+
+2. Run your image as a Deployment.
+
+kubectl apply -f deployment.yaml
+
+3. List Pods until the status is “Running”.
+
+kubectl get pods
+
+4. In order to access the application, we have to expose it to the internet via a Kubernetes Service.
+
+kubectl expose deployment/hello-world 
+# This creates a service of type ClusterIP.
+
+5. Open a new terminal window using Terminal > New Terminal.
+
+6. Cluster IPs are only accesible within the cluster. To make this externally accessible, we will create a proxy.
+# Note: This is not how you would make an application externally accessible in a production scenario.
+Run this command in the new terminal window since your environment variables need to be accessible in the original window for subsequent commands.
+
+kubectl proxy
+
+# This command will continue running until it exits. Keep it running so that you can continue to access your app.
+
+7. Go back to your original terminal window, ping the application to get a response.
+# NOTE: Do not close the terminal window where the proxy command is still running.
+
+curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world/proxy
+
+---
+Scaling the application using a ReplicaSet
+
+1. Use the scale command to scale up your Deployment. Make sure to run this in the terminal window that is not running the proxy command.
+
+kubectl scale deployment hello-world --replicas=3
+
+2. Get Pods to ensure that there are now three Pods instead of just one. In addition, the status should eventually update to “Running” for all three.
+
+kubectl get pods
+
+3. As you did in the last lab, ping your application multiple times to ensure that Kubernetes is load-balancing across the replicas.
+
+for i in `seq 10`; do curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world/proxy; done
+
+4. Similarly, you can use the scale command to scale down your Deployment.
+
+kubectl scale deployment hello-world --replicas=1
+
+5. Check the Pods to see that two are deleted or being deleted.
+
+kubectl get pods
+
+6. Please wait for some time & run the same command again to ensure that only one pod exists.
+
+kubectl get pods
+
+--- 
+Using a ConfigMap to store configuration
+
+ConfigMaps and Secrets are used to store configuration information separate from the code so that nothing is hardcoded. 
+It also lets the application pick up configuration changes without needing to be redeployed. 
+To demonstrate this, we’ll store the application’s message in a ConfigMap so that the message can be updated simply by updating the ConfigMap.
+
+1. Create a ConfigMap that contains a new message.
+
+kubectl create configmap app-config --from-literal=MESSAGE="This message came from a ConfigMap! :)"
+
+2. Use the Explorer to edit deployment-configmap-env-var.yaml. The path to this file is CC201/labs/3_K8sScaleAndUpdate/. You need to insert your namespace where it says <my_namespace>. Make sure to save the file when
+
+3. In the same file, notice the section reproduced below. The bottom portion indicates that environment variables should be defined in the container from the data in a ConfigMap named app-config.
+
+4. Use the Explorer to open the app.js file. The path to this file is CC201/labs/3_K8sScaleAndUpdate/. Find the line that says, res.send('Welcome to ' + hostname + '! Your app is up and running!\n').
+Edit this line to look like the following:
+
+res.send(process.env.MESSAGE + '\n')
+
+5. Build and push a new image that contains your new application code.
+
+docker build -t us.icr.io/$MY_NAMESPACE/hello-world:3 . && docker push us.icr.io/$MY_NAMESPACE/hello-world:3
+
+6. Apply the new Deployment configuration.
+
+kubectl apply -f deployment-configmap-env-var.yaml
+
+7. Ping your application again to see if the message from the environment variable is returned.
+
+curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world/proxy
+# If you see the message, “This message came from a ConfigMap!”, then great job!
+
+8. Because the configuration is separate from the code, the message can be changed without rebuilding the image. Using the following command, delete the old ConfigMap and create a new one with the same name but a different message.
+
+kubectl delete configmap app-config && kubectl create configmap app-config --from-literal=MESSAGE="This message is different, and you didn't have to rebuild the image!"
+
+9. Restart the Deployment so that the containers restart. This is necessary since the environment variables are set at start time.
+
+kubectl rollout restart deployment hello-world
+
+10. Ping your application again to see if the new message from the environment variable is returned.
+
+curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world/proxy
+
+---
+Autoscale the hello-world application using Horizontal Pod Autoscaler
+
+1. Please add the following section to the deployment.yaml file under the template.spec.containers section for increasing the CPU resource utilization
+
+          name: http
+        resources:
+          limits:
+            cpu: 50m
+          requests:
+            cpu: 20m
+
+2. Apply the deployment:
+
+kubectl apply -f deployment.yaml
+
+3. Autoscale the hello-world deployment using the below command:
+
+kubectl autoscale deployment hello-world --cpu-percent=5 --min=1 --max=10
+
+4. You can check the current status of the newly-made HorizontalPodAutoscaler, by running:
+
+kubectl get hpa hello-world
+
+5. Please ensure that the kubernetes proxy is still running in the 2nd terminal. If it is not, please start it again by running:
+
+kubectl proxy
+
+6. Open another new terminal and enter the below command to spam the app with multiple requests for increasing the load:
+
+for i in `seq 100000`; do curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world/proxy; done
+
+# Continue further commands in the 1st terminal
+7. Run the below command to observe the replicas increase in accordance with the autoscaling:
+
+kubectl get hpa hello-world
+
+8. Run the below command to observe the details of the horizontal pod autoscaler:
+
+kubectl get hpa hello-world
+# You will notice that the number of replicas has increased now.
+
+9. Stop the proxy and the load generation commands running in the other 2 terminal by pressing CTRL + C.
+
+10. Delete the Deployment.
+
+kubectl delete deployment hello-world
+
+11. Delete the Service.
+
+kubectl delete service hello-world
+
+# Congratulations! You have completed the lab for the third module of this course.
