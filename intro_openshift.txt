@@ -1,0 +1,16 @@
+# Verify that oc CLI is installed.
+oc version
+
+# Clone the git repository that contains the artifacts needed for this lab, if it doesn't already exist.
+[ ! -d 'CC201' ] && git clone https://github.com/ibm-developer-skills-network/CC201.git
+
+# List the Pods in this namespace.
+oc get pods
+
+# In addition to Kubernetes objects, you can get OpenShift specific objects. Because you haven't created a BuildConfig yet, this will not return any resources.
+oc get buildconfigs
+
+# View the OpenShift project that is currently in use.
+oc project
+
+
