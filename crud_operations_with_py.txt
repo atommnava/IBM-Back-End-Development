@@ -1,0 +1,104 @@
+In this lab, you will learn how to create a Products's list using a Flask server. Your application should allow you to add a product, retrieve the products, retrieve a specific product with its id, update a specific product with its id, and delete a product with its id. All these operations will be achieved through the REST API endpoints in your Flask server.
+You will create an application with API endpoints to perform Create, Retrieve, Update, and Delete operations on the above data using a Flask server.
+You will use cURL and POSTMAN to test the implemented endpoints.
+
+Set-up : Create application
+
+1. Open a terminal window by using the menu in the editor: Terminal > New Terminal.
+
+2. Run the following command to clone the Git repository that contains the starter code needed for this lab, if it doesn't already exist.
+  [ ! -d 'jmgdo-microservices' ] && git clone https://github.com/ibm-developer-skills-network/jmgdo-microservices.git
+
+3. Change to the directory jmgdo-microservices/CRUD to start working on the lab.
+  cd jmgdo-microservices/CRUD
+
+4. List the contents of this directory to see the artifacts for this lab.
+    ls
+    
+5. Run the following command on the terminal to install the packages that are required.
+  python3 -m pip install flask flask_cors
+
+Exercise 1: Understand the server application
+    
+In the Files Explorer open the jmgdo-microservices/CRUD folder and view products.py.
+
+    You first need to import the packages required to create REST APIs with Flask.
+
+    from flask import Flask, jsonify, request
+import json
+
+    You can then create the Flask application, which will service all the REST APIs for adding, retrieving, updating, and deleting products.
+
+      app = Flask("Product Server")
+
+      The code has precreated products added to the list. These are defined in the following code.
+
+      products = [
+    {'id': 143, 'name': 'Notebook', 'price': 5.49},
+    {'id': 144, 'name': 'Black Marker', 'price': 1.99}
+]
+
+Add the following code to products.py in the space provided.
+
+# Example request - http://localhost:5000/products
+@app.route('/products', methods=['GET'])
+def get_products():
+    return jsonify(products)
+
+# Example request - http://localhost:5000/products/144 - with method GET
+@app.route('/products/<id>', methods=['GET'])
+def get_product(id):
+    id = int(id)
+    product = [x for x in products if x["id"] == id][0]
+    return jsonify(product)
+
+# Example request - http://localhost:5000/products - with method POST
+@app.route('/products', methods=['POST'])
+def add_product():
+    products.append(request.get_json())
+    return '', 201
+
+# Example request - http://localhost:5000/products/144 - with method PUT
+@app.route('/products/<id>', methods=['PUT'])
+def update_product(id):
+    id = int(id)
+    updated_product = json.loads(request.data)
+    product = [x for x in products if x["id"] == id][0]
+    for key, value in updated_product.items():
+        product[key] = value
+    return '', 204
+
+# Example request - http://localhost:5000/products/144 - with method DELETE
+@app.route('/products/<id>', methods=['DELETE'])
+def remove_product(id):
+    id = int(id)
+    product = [x for x in products if x["id"] == id][0]
+    products.remove(product)
+    return '', 204
+
+In the terminal, run the python server using the following command.
+python3 products.py
+
+Open another Terminal by clicking the Terminal menu and selecting New Terminal.
+In the new terminal, run the following command to access the http://localhost:5000/products API endpoint. 
+curl command stands for Client URL and is used as command line interfacing with the server serving REST API endpoints. 
+It is, by default, a GET request.
+
+curl http://localhost:5000/products
+
+This returns a JSON with the products that have been preloaded.
+
+In the terminal, run the following command to add a product to the list. This will be a POST request to which you will pass the product parameter as a JSON.
+
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"id": 145, "name": "Pen", "price": 2.5}' \
+    http://localhost:5000/products
+
+This command will not return any output. It will add the product to the list of products.
+Verify if the product is added by running the following command.
+
+curl http://localhost:5000/products/145
+
+
+                                          
+
