@@ -1,0 +1,55 @@
+Open SSL Encrypt and Decrypt Files
+
+Estimated time needed: 15 minutes
+
+In this lab, you will learn to encrypt files into an unreadable, incomprehensible format using special hashing techniques and also decrypt an encrypted file.
+
+// Task 1: Decrypting a simple file
+Step 1:
+
+Run the following command in the terminal on the right to get an encrypted secret file
+wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-CD0267EN-SkillsNetwork/labs/module1/encrypted_secretfile
+
+Step 2:
+
+View the file content from the explorer menu on the left
+
+You will see that the content is not readable, and is all encrypted. This has been encoded using aes-256-cbc cipher. Each cipher has its own algorithm. aes-256-cbc is one of the older and simpler ciphers, and there are now much better algorithms to encrypt the data.
+
+Step 3:
+
+Run the following command to decrypt the file.
+openssl aes-256-cbc -d -a -pbkdf2 -in encrypted_secretfile -out secrets.txt
+
+Step 4:
+
+It will prompt you for a password. When the file was encrypted, it was done so with the aes-256-cbc cipher using a password. You need to type the password into the prompt to decrypt the file. The file has been encrypted with the password adios. The same needs to be given to decrypt it.
+
+Type the password and press enter. Note that the password will not appear on the terminal.
+
+Step 5:
+
+The decrypted file will be viewable through the explorer with decrypted contents.
+
+// Task 2: Encrypt the file
+Step 1:
+
+Make changes, as you require, to the secret.txt file and encrypt it with a new password. It will prompt you to enter and renter the same password to verify. Make sure you remember the password.
+openssl aes-256-cbc -a -pbkdf2 -in secrets.txt -out secrets.txt.enc
+
+Step 2:
+
+Now that you have decrypted the file, take it further and encrypt the file.
+
+Step 3:
+
+Remove the original secret.txt from the system by running the following command.
+
+rm secrets.txt
+
+Next Steps
+
+You can optionally explore the cipher algorithms available with OpenSSL by typing the following command in the terminal.
+openssl enc --list
+
+
