@@ -1,0 +1,74 @@
+Welcome to the Using Dynamic Analysis lab! In this lab, you will learn how to install, configure, and use OWASP ZAP for dynamic analysis of your project code.
+
+If you ask a developer what their top three goals are, you are most likely going to hear the following:
+
+-Write bug-free code
+-Meet design specifications
+-Prevent security issues
+To meet these goals, development teams often need to review and test their code comprehensively. Code analysis is one of the solutions. In this lab, you will see how using dynamic code analysis can help you prevent security issues.
+
+Step 1: Fetch the Insecure App: Juice Shop
+
+To test the OWASP Juice Shop app, you must fetch and run the application. 
+Open up a terminal by clicking Terminal -> New Terminal in the top menu bar. 
+Copy and paste the following commands in the terminal window to fetch Juice Shop's docker image, and then run the application in the current Cloud IDE.
+docker pull bkimminich/juice-shop
+docker run --rm -p 3000:3000 bkimminich/juice-shop
+
+After running the two commands, wait until you see the message “info: Server listening on port 3000” in the terminal before proceeding with the lab. 
+If you do not see this message, try leaving this lab and then restarting it.
+info: Server listening on port 3000
+
+Step 2: Launch the Juice Shop UI
+Next, click the Web Application button below. Once you've clicked the button, you will see the app start running!
+
+Step 3: Run OWASP ZAP
+Your Task
+
+Open a new terminal window using Terminal > New Terminal to issue new docker commands.
+
+In the terminal, execute the docker pull command to download/pull the docker image of OWASP ZAP. (Note: It may take some time to download.)
+docker pull softwaresecurityproject/zap-stable
+
+Now that the tool is installed in the current Cloud IDE, you can start a vulnerability scan of the Juice Shop app.
+
+Next, copy the URL of the app from the address bar of the running application in Cloud IDE to your clipboard. 
+Then run the following command and replace the {TARGET_URL} with the URL you copied.
+docker run -t softwaresecurityproject/zap-stable zap-baseline.py -t {TARGET_URL}
+
+ZAP will now start its crawling activity of the site and builds a sitemap, and the related output can be reviewed in the terminal. This will take a few minutes to execute.
+
+Step 4: Interpret the scan results
+
+Let's look at the reults that came back from the scan.
+
+A number of items tested came back with PASS: so we will not look at those.
+
+Our attention is on any warnings or failures. 
+Below is a summary of the ten warnings that came back. 
+ach describes the vulnerability, then cites the number of times it was found (for example, x 3), and then lists the URLs that had the vulnerability. 
+We have removed the URLs to create the summary list below:
+
+WARN-NEW: Re-examine Cache-control Directives [10015] x 3 
+WARN-NEW: Cross-Domain JavaScript Source File Inclusion [10017] x 4 
+WARN-NEW: Missing Anti-clickjacking Header [10020] x 2 
+WARN-NEW: X-Content-Type-Options Header Missing [10021] x 9 
+WARN-NEW: Information Disclosure - Suspicious Comments [10027] x 2 
+WARN-NEW: Strict-Transport-Security Header Not Set [10035] x 1 
+WARN-NEW: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s) [10037] x 9 
+WARN-NEW: Content Security Policy (CSP) Header Not Set [10038] x 2 
+WARN-NEW: Non-Storable Content [10049] x 10 
+WARN-NEW: Deprecated Feature Policy Header Set [10063] x 6 
+WARN-NEW: Timestamp Disclosure - Unix [10096] x 1 
+WARN-NEW: Cross-Domain Misconfiguration [10098] x 9 
+WARN-NEW: Modern Web Application [10109] x 2 
+WARN-NEW: Dangerous JS Functions [10110] x 2 
+WARN-NEW: Session Management Response Identified [10112] x 6 
+WARN-NEW: Loosely Scoped Cookie [90033] x 4 
+FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 16    WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 48
+
+As you can see, this application has vulnerabilities in Cross-Domain JavaScript Source File Inclusion, Missing Anti-clickjacking Header, X-Content-Type-Options Header Missing, Content Security Policy (CSP) Header Not Set, Cross-Domain Misconfiguration, and Loosely Scoped Cookies, just to name a few.
+
+You can use the numbers next to the vulnerability names to read about the alert on the ZAP Proxy Web site. Using the following URL:
+https://www.zaproxy.org/docs/alerts/{NUMBER}
+Be sure to replace {NUMBER} with the number of the alert.
